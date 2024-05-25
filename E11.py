@@ -7,8 +7,11 @@ leaf_image = cv2.imread('leaf.jpg')
 # μετατρέπουμε την εικόνα σε grayscale
 grayscale_image = cv2.cvtColor(leaf_image, cv2.COLOR_BGR2GRAY)
 
+# πως προκύπτει η δυαδική εικόνα :
 # κατωφλιώνουμε με τιμή κατωφλίου τ = 220
-_, thresholded_image = cv2.threshold(grayscale_image, 220, 255, cv2.THRESH_BINARY)
+# εάν >  τ=220 --> άσπρο
+# εάν <  τ=220 --> μαύρο
+_, binary_image = cv2.threshold(grayscale_image, 220, 255, cv2.THRESH_BINARY)
 
 # εκτυπώνουμε τις εικόνες
 # αρχική εικόνα leaf_image
@@ -16,10 +19,11 @@ cv2.imshow('leaf_image', leaf_image)
 # grayscale image show 
 cv2.imshow('Grayscale_image', grayscale_image)
 # δυαδική image show 
-cv2.imshow('Thresholded_image', thresholded_image)  
+cv2.imshow('Binary_image', binary_image)  
 
 # αντιστροφή της δυαδική 
-thresholded_image = cv2.bitwise_not(thresholded_image)
+thresholded_image = cv2.bitwise_not(binary_image)
+
 
 # moore boundary tracing algorithm
 def moore_boundary_algorithm(image):

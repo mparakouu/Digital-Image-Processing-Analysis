@@ -10,8 +10,7 @@ block_size = 32 # block διαστάσεων 32x32
 # DCT για κάθε block
 dct_blocks = [cv2.dct(np.float32(lenna_image[y:y+block_size, x:x+block_size])) 
 
-for y in range(0, height, block_size) for x in range(0, width, block_size) 
-if lenna_image[y:y+block_size, x:x+block_size].shape == (block_size, block_size)]
+for y in range(0, height, block_size) for x in range(0, width, block_size)  if lenna_image[y:y+block_size, x:x+block_size].shape == (block_size, block_size)]
 
 # για κάθε block στο dct_blocks --> εκτύπωση συντελεστών
 for i, block in enumerate(dct_blocks):
@@ -24,10 +23,22 @@ number_blocks_y = int(height / 32)
 # όλα τα block σε μία εικόνα
 rows_blocks = [np.hstack(dct_blocks[i*number_blocks_x  : (i+1)*number_blocks_x ]) for i in range(number_blocks_y)] # βάζει τα block στην ίδια γραμμή 
 merged_blocks = np.vstack(rows_blocks) # βάζει τα block κατακόρυφα 
-final_blocks_image = np.uint8(merged_blocks) # σε uint8 τύπο data, και τελική εικόνα με blocks
+final_blocks_image = np.where(np.isnan(merged_blocks), 0, np.uint8(merged_blocks))# σε uint8 τύπο data, και τελική εικόνα με blocks
+
+                        # ΜΕΘΟΔΟΣ ΖΩΝΗΣ
+p = 0 # ποσοστό p της πληροφορίας που θα κρατήσω
+# κατωφλι --> για τη μέθοδο της ζώνης
+# εάν συντελεστές > τιμή κατωφλίου --> κρατάμε
+threshold = np.percentile(np.abs(merged_blocks), 100 * (1 - p))
+selected_coefficients = np.where(np.abs(merged_blocks) > threshold, merged_blocks, 0)
+
+print("Οι συντελεστές που κρατήσαμε:")
+print(selected_coefficients)
+
 
 cv2.imshow('lenna image', lenna_image)
 cv2.imshow('Blocks after 2D-DCT', final_blocks_image)
+
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()

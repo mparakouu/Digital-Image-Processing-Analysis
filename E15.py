@@ -30,7 +30,7 @@ fshift_kernel = np.fft.fftshift(fourier_kernel)  # μετατόπιση του �
 Frequency_response_kernel = 20 * np.log(np.abs(fshift_kernel) + 1e-10) # απόκριση συχνότητας 
 
 
-# Display images
+
 cv2.imshow('New York image', newYork_image_rgb)
 cv2.imshow('Filter the new york image using: 2D Gaussian smoothing', final_blurred_image)
 cv2.imshow('Add white Gaussian noise to blurred image', noisy_image)

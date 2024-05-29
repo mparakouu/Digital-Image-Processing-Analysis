@@ -36,18 +36,8 @@ Frequency_response_kernel = 20 * np.log(np.abs(fourier_shift_kernel) + 1e-10) # 
 
                     # WIENER DECONVOLUTION
 
-SNR = 1 / variance_noise 
 
 
-# Υπολογισμός του Wiener Filter
-wiener_filter = np.ones_like(fourier_shift_kernel, dtype=np.complex128)
-
-wiener_filter[:256, :256] = np.conj(fourier_shift_kernel) / (np.abs(fourier_shift_kernel) ** 2 + 1 / SNR)
-
-
-# Εφαρμογή Wiener Deconvolution
-restored_image = np.fft.ifft2(np.fft.fft2(noisy_image) * wiener_filter).real
-restored_image = np.clip(restored_image, 0, 255).astype(np.uint8)
 
 
 cv2.imshow('New York image', newYork_image_rgb)
@@ -75,8 +65,7 @@ plt.axis('off')
 
 plt.show()
 
-# Παρουσίαση της αποκατεστημένης εικόνας
-cv2.imshow('Restored Image using Wiener Deconvolution', restored_image)
+
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()

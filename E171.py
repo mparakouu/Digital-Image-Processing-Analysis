@@ -34,15 +34,6 @@ for i, contour in enumerate(coins_contours):
 
 
 
-
-
-
-
-
-
-
-
-
 cv2.imshow('coins image with threshold', coins_thresholded)
 cv2.imshow('coins with different colors & white background', coins_white_background)
 

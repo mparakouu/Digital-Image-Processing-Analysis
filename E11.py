@@ -66,18 +66,30 @@ percentages = [100, 50, 10, 1]
 
 # IFFT
 for percentage in percentages:
-    number_of_coefficients = int(len(fourier_description) * percentage / 100)
+    #συντελεστές που θα χρησιμοποιήσω
+    number_of_coefficients = int(len(fourier_description) * percentage / 100) # συν. αριθμός συντ.  * ποσοστο / 100 
     
-    # IFFT στους συντελεστές fourier
-    IFFT_description_fourier = np.fft.ifft(fourier_description[:number_of_coefficients])
+    coeff_fourier_description = np.zeros_like(fourier_description) # πίνακας με συντ.
+    #διατηρούμε τους πιο σημαντικούς συντε --> αρχή κ τέλος
+    # παίρνουμε τους τελευταίους συντ --> πιο σημαντικοί και τους βάζουμε στον νέο πίνακα
+    coeff_fourier_description[:number_of_coefficients] = fourier_description[:number_of_coefficients]
+    coeff_fourier_description[-number_of_coefficients:] = fourier_description[-number_of_coefficients:]
     
-    # μεττροπή των σύνθετων αριθμών σε του IFFT --> σημεία του ροζ περιγράμματος 
-    reconstructed_image_outline = np.array([np.real(IFFT_description_fourier), np.imag(IFFT_description_fourier)]).T.reshape((-1, 1, 2)).astype(np.int32)
+    # IFFT
+    IFFT_description_fourier = np.fft.ifft(coeff_fourier_description)
+    
+    reconstructed_image_boundary = np.array([ # ανακατασκευασμένο περίγραμμα
+        np.real(IFFT_description_fourier),
+        np.imag(IFFT_description_fourier)
+    ]).T.reshape((-1, 1, 2))
+    
+    reconstructed_image_boundary = np.clip(reconstructed_image_boundary, 0, [leaf_image.shape[1], leaf_image.shape[0]])
+    reconstructed_image_boundary = reconstructed_image_boundary.astype(np.int32) # --> ακέραιους
     
     reconstructed_image = cv2.imread('leaf.jpg')
 
     color1 = (150, 0, 150) # χρώμα για το περίγραμμα του ανακατασκευασμένου --> μωβ
-    cv2.drawContours(reconstructed_image, [reconstructed_image_outline], -1, color1, thickness=2) # μωβ περίγραμμα
+    cv2.drawContours(reconstructed_image, [reconstructed_image_boundary], -1, color1, thickness=2) # μωβ περίγραμμα
     cv2.imshow(f'Reconstructed image {percentage}% of most significant coefficients', reconstructed_image)
 
 

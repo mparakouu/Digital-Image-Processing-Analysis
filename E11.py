@@ -21,29 +21,29 @@ cv2.imshow('Grayscale_image', grayscale_image)
 # δυαδική image show 
 cv2.imshow('Binary_image', binary_image)  
 
-# αντιστροφή της δυαδική 
-thresholded_image = cv2.bitwise_not(binary_image)
+
+thresholded_image = cv2.bitwise_not(binary_image) # αντιστροφή της δυαδική 
+cv2.imshow('Binary_image reverse', thresholded_image)  
 
 
+
+                        # ΑΛΓΟΡΙΘΜΟΣ MOORE BOUNDARY TRACING 
 # moore boundary tracing algorithm
 def moore_boundary_algorithm(image):
     boundaries, _ = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     boundary = boundaries[0] if boundaries else None
     return boundary
 
-
 # εξάγουμε το περίγραμμα του φύλλου από τη δυαδική εικόνα
 leaf_with_pink_boundary = moore_boundary_algorithm(thresholded_image)
 
-# χρώμα για το περίγραμμα --> ροζ
-color = (255, 0, 255)  
-
+color = (255, 0, 255) # χρώμα για το περίγραμμα --> ροζ 
 # σχειδάζουμε το ροζ περίγραμμα πάνω στην leaf_image
 cv2.drawContours(leaf_image, [leaf_with_pink_boundary], -1, color, thickness=2)
+cv2.imshow('Moore boundary tracing algorithm with pink outline', leaf_image) # εμφάνιση leaf_image με ροζ περίγραμμα
 
-# εμφάνιση leaf_image με ροζ περίγραμμα
-cv2.imshow('Moore boundary tracing algorithm with pink outline', leaf_image)
 
+                        # ΠΕΡΙΓΡΑΦΕΙΣ FOURIER
 # υπολογισμός --> περιγραφείς Fourier του ροζ περιγράμματος
 # ροζ περίγραμμα --> σύνθετους αριθμούς
 leaf_pink_boundary_to_complex = np.array(leaf_with_pink_boundary[:, 0, 0] + 1j * leaf_with_pink_boundary[:, 0, 1], dtype=np.complex128)
@@ -51,20 +51,21 @@ leaf_pink_boundary_to_complex = np.array(leaf_with_pink_boundary[:, 0, 0] + 1j *
 # υπολογισμός : μετασχηματισμος Fourier του πίνακα με τους αριθμούς των ροζ περιγράματος
 fourier_description = np.fft.fft(leaf_pink_boundary_to_complex)
 
-# Εκτυπώνουμε τους περιγραφείς Fourier / πίνακας συντελεστών DFT
-print("Περιγραφείς Fourier του ροζ περιγράμματος:")
+
+print("Περιγραφείς Fourier του ροζ περιγράμματος:") # περιγραφείς Fourier / πίνακας συντελεστών DFT
 print(fourier_description)
 
 
-# Ανακατασκευή του ροζ περιγράμματος από τους περιγραφείς fourier με IFFT
-
+                        # ΑΝΑΚΑΤΑΣΚΕΥΗ ΠΕΡΙΓΡΑΜΜΑΤΟΣ ΑΠΟ ΠΕΡΙΓΡΑΦΕΙΣ FOURIER (IFFT)
 # σημαντικότεροι συντελεστές
+# 100 : χρήση όλων των συντελεστών --> δεν χάνεται πληροφορία
+# 50 --> χάνεται πληοροφορία
+# 10 --> χάνεται πληοροφορία
+# 1 --> χάνεται πληοροφορία
 percentages = [100, 50, 10, 1]
 
-# IFFT για κάθε ποσοστό 
+# IFFT
 for percentage in percentages:
-
-    # πόσους συντελεστές χρησιμοποιούμε κάθε φορά
     number_of_coefficients = int(len(fourier_description) * percentage / 100)
     
     # IFFT στους συντελεστές fourier
@@ -73,16 +74,10 @@ for percentage in percentages:
     # μεττροπή των σύνθετων αριθμών σε του IFFT --> σημεία του ροζ περιγράμματος 
     reconstructed_image_outline = np.array([np.real(IFFT_description_fourier), np.imag(IFFT_description_fourier)]).T.reshape((-1, 1, 2)).astype(np.int32)
     
-    # στην αρχική εικόα 
     reconstructed_image = cv2.imread('leaf.jpg')
 
-    # χρώμα για το περίγραμμα του ανακατασκευασμένου --> μωβ
-    color1 = (150, 0, 150)    
-    
-    # σχεδίαση του περιγράμματος πάνω στην εικόνα 
-    cv2.drawContours(reconstructed_image, [reconstructed_image_outline], -1, color1, thickness=2)
-
-    # Εμφάνιση της ανακατασκευασμένης εικόνας
+    color1 = (150, 0, 150) # χρώμα για το περίγραμμα του ανακατασκευασμένου --> μωβ
+    cv2.drawContours(reconstructed_image, [reconstructed_image_outline], -1, color1, thickness=2) # μωβ περίγραμμα
     cv2.imshow(f'Reconstructed image {percentage}% of most significant coefficients', reconstructed_image)
 
 

@@ -7,8 +7,7 @@ lenna_image = cv2.imread('lenna.jpg', cv2.IMREAD_GRAYSCALE)
 height, width = lenna_image.shape
 block_size = 32 # block διαστάσεων 32x32 
 
-# DCT για κάθε block
-dct_blocks = [cv2.dct(np.float32(lenna_image[y:y+block_size, x:x+block_size])) 
+dct_blocks = [cv2.dct(np.float32(lenna_image[y:y+block_size, x:x+block_size]))  # DCT για κάθε block
 
 for y in range(0, height, block_size) for x in range(0, width, block_size)  if lenna_image[y:y+block_size, x:x+block_size].shape == (block_size, block_size)]
 
@@ -27,7 +26,7 @@ final_blocks_image = np.where(np.isnan(merged_blocks), 0, np.uint8(merged_blocks
 
 
                             # ΜΕΘΟΔΟΣ ΖΩΝΗΣ 
-p = 0.9  # συντελεστές που θα κρατήσω 
+p = 0.9  # συντελεστές που θα κρατήσω  (ή 0.1)
 
 number_of_coef = int(block_size * block_size * p) # 32 * 32 * p --> συντελεστές που θα κρατήσω σε κάθε block
 the_mask = np.zeros((block_size, block_size), dtype=np.float32) # array 32*32 μάσκα
@@ -54,7 +53,8 @@ p1 = 1 # ποσοστό p της πληροφορίας που θα κρατήσ
 threshold = np.percentile(np.abs(merged_blocks), 100 * (1 - p1))
 number_of_coef1 = np.where(np.abs(merged_blocks) > threshold, merged_blocks, 0)
 
-print("Οι συντελεστές από threshold coding:")
+print(f"Οι συντελεστές από threshold coding για p = {p1}:")
+
 print(number_of_coef1)
 
 # idct

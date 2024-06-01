@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 
 # new_york_image
 newYork_image = cv2.imread('new_york.png')
+cv2.imshow('New York image', newYork_image)
 
 # BGR --> RGB 
 newYork_image_rgb = cv2.cvtColor(newYork_image, cv2.COLOR_BGR2RGB)

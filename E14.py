@@ -6,6 +6,7 @@ road_image1 = cv2.imread('dark_road_1.jpg')
 road_image2 = cv2.imread('dark_road_2.jpg')
 road_image3 = cv2.imread('dark_road_3.jpg')
 
+
 gray_road_image1 = cv2.cvtColor(road_image1, cv2.COLOR_BGR2GRAY)
 cv2.imshow('gray_road_image1', gray_road_image1)
 hist1 = cv2.calcHist([gray_road_image1], [0], None, [256], [0, 256])
@@ -22,23 +23,32 @@ hist3 = cv2.calcHist([gray_road_image3], [0], None, [256], [0, 256])
                     # ΟΛΙΚΗ ΕΞΙΣΩΣΗ HISTOGRAM
 equalizeHist1 = cv2.equalizeHist(gray_road_image1)
 cv2.imshow('Dark road image 1 EqualizedHist', equalizeHist1) 
+finalHist1 = cv2.calcHist([equalizeHist1], [0], None, [256], [0, 256])
 
 equalizeHist2 = cv2.equalizeHist(gray_road_image2)
 cv2.imshow('Dark road image 2 EqualizedHist', equalizeHist2)
+finalHist2 = cv2.calcHist([equalizeHist2], [0], None, [256], [0, 256])
 
 equalizeHist3 = cv2.equalizeHist(gray_road_image3)
 cv2.imshow('Dark road image 3 EqualizedHist', equalizeHist3)
-
-finalHist1 = cv2.calcHist([equalizeHist1], [0], None, [256], [0, 256])
-finalHist2 = cv2.calcHist([equalizeHist2], [0], None, [256], [0, 256])
 finalHist3 = cv2.calcHist([equalizeHist3], [0], None, [256], [0, 256])
+
 
 
                             # ΤΟΠΙΚΗ ΕΞΙΣΩΣΗ HISTOGRAM
 clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+
 equalize_Hist1 = clahe.apply(gray_road_image1)
+cv2.imshow('Dark road image 1 CLAHE', equalize_Hist1) 
+final_Hist1 = cv2.calcHist([equalize_Hist1], [0], None, [256], [0, 256])
+
 equalize_Hist2 = clahe.apply(gray_road_image2)
+cv2.imshow('Dark road image 2 CLAHE', equalize_Hist2) 
+final_Hist2 = cv2.calcHist([equalize_Hist2], [0], None, [256], [0, 256])
+
 equalize_Hist3 = clahe.apply(gray_road_image3)
+cv2.imshow('Dark road image 3 CLAHE', equalize_Hist3) 
+final_Hist3 = cv2.calcHist([equalize_Hist3], [0], None, [256], [0, 256])
 
 
 
@@ -88,32 +98,25 @@ plt.xlabel('Pixel Value')
 plt.ylabel('Frequency')
 
 
-                        #ΕΚΤΥΠΩΣΗ ΤΩΝ # ΤΟΠΙΚΗ ΕΞΙΣΩΣΗ HISTOGRAM
+                        #ΕΚΤΥΠΩΣΗ ΤΩΝ ΤΟΠΙΚΗ ΕΞΙΣΩΣΗ HISTOGRAM
 plt.figure(figsize=(8, 4))
+plt.subplot(1, 3, 1)
+plt.plot(final_Hist1, color='red')
+plt.title('Dark road image 1 CLAHE')
+plt.xlabel('Pixel Value')
+plt.ylabel('Frequency')
 
+plt.subplot(1, 3, 2)
+plt.plot(final_Hist2, color='pink')
+plt.title('Dark road image 2 CLAHE')
+plt.xlabel('Pixel Value')
+plt.ylabel('Frequency')
 
-plt.subplot(2, 3, 1)
-plt.imshow(equalize_Hist1, cmap='gray')
-plt.title('Road Image 1')
-plt.subplot(2, 3, 4)
-plt.hist(equalize_Hist1.flatten(), bins=256, range=[0,256], color='red')
-plt.title('Histogram for equal. Road Image 1')
-
-
-plt.subplot(2, 3, 2)
-plt.imshow(equalize_Hist2, cmap='gray')
-plt.title('Road Image 2')
-plt.subplot(2, 3, 5)
-plt.hist(equalize_Hist2.flatten(), bins=256, range=[0,256], color='pink')
-plt.title('Histogram for equal. Road Image 2')
-
-
-plt.subplot(2, 3, 3)
-plt.imshow(equalize_Hist3, cmap='gray')
-plt.title('Road Image 3')
-plt.subplot(2, 3, 6)
-plt.hist(equalize_Hist3.flatten(), bins=256, range=[0,256], color='purple')
-plt.title('Histogram for equal. Road Image 3')
+plt.subplot(1, 3, 3)
+plt.plot(final_Hist3, color='purple')
+plt.title('Dark road image 3 CLAHE')
+plt.xlabel('Pixel Value')
+plt.ylabel('Frequency')
 
 plt.tight_layout()
 plt.show()
